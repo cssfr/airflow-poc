@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:15'
+    environment:
+      POSTGRES_USER: '${AIRFLOW_POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${AIRFLOW_POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${AIRFLOW_POSTGRES_DB}'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - '-U'
+        - '${AIRFLOW_POSTGRES_USER}'
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: 'redis:7-alpine'
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 5s
+      timeout: 30s
+      retries: 50
+
+  airflow-init:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CELERY__BROKER_URL: 'redis://redis:6379/0'
+      AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+    volumes:
+      - 'airflow_logs:/opt/airflow/logs'
+    command: "bash -c \"airflow db init && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com\""
+
+  airflow-webserver:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+      - airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CELERY__BROKER_URL: 'redis://redis:6379/0'
+      AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      SUPABASE_URL: '${SUPABASE_URL}'
+      SUPABASE_SERVICE_ROLE_KEY: '${SUPABASE_SERVICE_ROLE_KEY}'
+      MINIO_ENDPOINT: '${MINIO_ENDPOINT}'
+      MINIO_ACCESS_KEY: '${MINIO_ACCESS_KEY}'
+      MINIO_SECRET_KEY: '${MINIO_SECRET_KEY}'
+      MINIO_BUCKET: '${MINIO_BUCKET}'
+    volumes:
+      - 'airflow_logs:/opt/airflow/logs'
+    expose:
+      - "8080"
+    command: "airflow webserver"
+
+  airflow-scheduler:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+      - airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CELERY__BROKER_URL: 'redis://redis:6379/0'
+      AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      SUPABASE_URL: '${SUPABASE_URL}'
+      SUPABASE_SERVICE_ROLE_KEY: '${SUPABASE_SERVICE_ROLE_KEY}'
+      MINIO_ENDPOINT: '${MINIO_ENDPOINT}'
+      MINIO_ACCESS_KEY: '${MINIO_ACCESS_KEY}'
+      MINIO_SECRET_KEY: '${MINIO_SECRET_KEY}'
+      MINIO_BUCKET: '${MINIO_BUCKET}'
+    volumes:
+      - 'airflow_logs:/opt/airflow/logs'
+    command: "airflow scheduler"
+
+  airflow-worker:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+      - airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CELERY__BROKER_URL: 'redis://redis:6379/0'
+      AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://${AIRFLOW_POSTGRES_USER}:${AIRFLOW_POSTGRES_PASSWORD}@postgres/${AIRFLOW_POSTGRES_DB}'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      SUPABASE_URL: '${SUPABASE_URL}'
+      SUPABASE_SERVICE_ROLE_KEY: '${SUPABASE_SERVICE_ROLE_KEY}'
+      MINIO_ENDPOINT: '${MINIO_ENDPOINT}'
+      MINIO_ACCESS_KEY: '${MINIO_ACCESS_KEY}'
+      MINIO_SECRET_KEY: '${MINIO_SECRET_KEY}'
+      MINIO_BUCKET: '${MINIO_BUCKET}'
+    volumes:
+      - 'airflow_logs:/opt/airflow/logs'
+    command: "airflow celery worker"
+
+volumes:
+  postgres_data: null
+  airflow_logs: null

@@ -1,15 +1,8 @@
-# Apache Airflow
-apache-airflow==2.8.1
-
-# Additional useful packages for data processing
-pandas==2.1.4
-numpy==1.24.3
-requests==2.31.0
+apache-airflow[celery,postgres,redis]==2.8.0
+supabase==2.3.4
+polars==0.20.0
+duckdb==0.10.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
 psycopg2-binary==2.9.9
-sqlalchemy==2.0.23
-
-# Development dependencies
-pytest==7.4.3
-pytest-cov==4.1.0
-black==23.11.0
-flake8==6.1.0
