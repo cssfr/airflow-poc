@@ -63,8 +63,14 @@ services:
       MINIO_BUCKET: '${MINIO_BUCKET}'
     volumes:
       - 'airflow_logs:/opt/airflow/logs'
-    expose:
-      - "8080"
+      - ./dags:/opt/airflow/dags
+      - ./utils:/opt/airflow/utils
+      - ./strategies:/opt/airflow/strategies
+      - ./engines:/opt/airflow/engines
+      - ./config:/opt/airflow/config
+      - ./scripts:/opt/airflow/scripts
+    ports:
+      - "8081:8080"
     command: "airflow webserver"
 
   airflow-scheduler:
@@ -87,6 +93,12 @@ services:
       MINIO_BUCKET: '${MINIO_BUCKET}'
     volumes:
       - 'airflow_logs:/opt/airflow/logs'
+      - ./dags:/opt/airflow/dags
+      - ./utils:/opt/airflow/utils
+      - ./strategies:/opt/airflow/strategies
+      - ./engines:/opt/airflow/engines
+      - ./config:/opt/airflow/config
+      - ./scripts:/opt/airflow/scripts
     command: "airflow scheduler"
 
   airflow-worker:
@@ -109,6 +121,12 @@ services:
       MINIO_BUCKET: '${MINIO_BUCKET}'
     volumes:
       - 'airflow_logs:/opt/airflow/logs'
+      - ./dags:/opt/airflow/dags
+      - ./utils:/opt/airflow/utils
+      - ./strategies:/opt/airflow/strategies
+      - ./engines:/opt/airflow/engines
+      - ./config:/opt/airflow/config
+      - ./scripts:/opt/airflow/scripts
     command: "airflow celery worker"
 
 volumes:

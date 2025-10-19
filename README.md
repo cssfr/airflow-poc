@@ -99,12 +99,33 @@ airflow dags trigger test_dag
 ### Local Development
 
 ```bash
-# Build and run locally
+# 1. Create environment file
+cp env.example .env
+# Edit .env with your actual credentials
+
+# 2. Build and run locally
 docker-compose up --build
 
-# Access Airflow UI
-open http://localhost:8080
+# 3. Access Airflow UI (Note: Port 8081 to avoid conflict with pgadmin)
+open http://localhost:8081
+# Login: admin / admin
 ```
+
+**Important Notes:**
+- Airflow UI runs on port **8081** (not 8080) to avoid conflict with pgadmin
+- Code changes are automatically reflected via volume mounts (no rebuild needed)
+- Create `.env` file from `env.example` template before running
+
+**Volume Mounts for Live Development:**
+The docker-compose.yml includes volume mounts for all code directories:
+- `./dags` → `/opt/airflow/dags` (your DAGs)
+- `./utils` → `/opt/airflow/utils` (utility functions)
+- `./strategies` → `/opt/airflow/strategies` (strategy classes)
+- `./engines` → `/opt/airflow/engines` (backtesting engines)
+- `./config` → `/opt/airflow/config` (configuration)
+- `./scripts` → `/opt/airflow/scripts` (utility scripts)
+
+This means you can edit files locally and see changes immediately in the running containers.
 
 ### Adding New Engines
 
