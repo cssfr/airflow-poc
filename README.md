@@ -137,3 +137,17 @@ This means you can edit files locally and see changes immediately in the running
 ## 📝 License
 
 Private project - All rights reserved
+
+
+
+////
+
+
+When You DO Need to Restart:
+You only need docker-compose down && docker-compose up -d when you:
+Change requirements.txt (need to rebuild)
+Change Dockerfile (need to rebuild)
+Change docker-compose.yml (need to restart services)
+Change environment variables in .env (need to restart)
+🎯 For DAG Development:
+Just edit, save, and refresh the Airflow UI. That's it! Your development cycle is now super fast and efficient. 🚀
