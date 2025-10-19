@@ -61,17 +61,19 @@ def test_minio_connection():
         if not all([minio_endpoint, minio_access_key, minio_secret_key, minio_bucket]):
             return "Missing MinIO environment variables"
         
-        # Test connection
+        # Test connection with MinIO-specific settings
         conn = duckdb.connect(':memory:')
         conn.execute("INSTALL httpfs")
         conn.execute("LOAD httpfs")
         conn.execute(f"SET s3_endpoint='{minio_endpoint}'")
         conn.execute(f"SET s3_access_key_id='{minio_access_key}'")
         conn.execute(f"SET s3_secret_access_key='{minio_secret_key}'")
-        conn.execute(f"SET s3_use_ssl=false")
+        conn.execute("SET s3_use_ssl=true")  # Force HTTPS for MinIO
+        conn.execute("SET s3_url_style='path'")  # MinIO uses path-style URLs
+        conn.execute("SET s3_region='us-east-1'")  # MinIO default region
         
-        # Try to list files
-        result = conn.execute(f"SELECT COUNT(*) FROM read_parquet('s3://{minio_bucket}/*/*.parquet') LIMIT 1").fetchone()
+        # Try to read the specific file that exists
+        result = conn.execute(f"SELECT COUNT(*) FROM read_parquet('s3://{minio_bucket}/ohlcv/1Y/symbol=DAX/year=2025/DAX_2025.parquet')").fetchone()
         
         return f"✅ MinIO connection successful! Found data in bucket"
         

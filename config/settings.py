@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = Field(default="trading-data", env="MINIO_BUCKET")
     MINIO_USE_SSL: bool = Field(default=False, env="MINIO_USE_SSL")
     
-    # Airflow Configuration
-    AIRFLOW_POSTGRES_USER: str = Field(env="AIRFLOW_POSTGRES_USER")
-    AIRFLOW_POSTGRES_PASSWORD: str = Field(env="AIRFLOW_POSTGRES_PASSWORD")
-    AIRFLOW_POSTGRES_DB: str = Field(env="AIRFLOW_POSTGRES_DB")
+    # Airflow Configuration (optional - only needed for Airflow internal operations)
+    AIRFLOW_POSTGRES_USER: Optional[str] = Field(env="AIRFLOW_POSTGRES_USER", default=None)
+    AIRFLOW_POSTGRES_PASSWORD: Optional[str] = Field(env="AIRFLOW_POSTGRES_PASSWORD", default=None)
+    AIRFLOW_POSTGRES_DB: Optional[str] = Field(env="AIRFLOW_POSTGRES_DB", default=None)
     
     class Config:
-        env_file = ".env"
+        # Remove env_file = ".env" - let it use environment variables from Docker
         case_sensitive = True
 
 

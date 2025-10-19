@@ -22,11 +22,13 @@ class DataManager:
             self.conn.execute("INSTALL httpfs")
             self.conn.execute("LOAD httpfs")
             
-            # Configure S3 settings
+            # Configure S3 settings for MinIO
             self.conn.execute(f"SET s3_endpoint='{settings.MINIO_ENDPOINT}'")
             self.conn.execute(f"SET s3_access_key_id='{settings.MINIO_ACCESS_KEY}'")
             self.conn.execute(f"SET s3_secret_access_key='{settings.MINIO_SECRET_KEY}'")
-            self.conn.execute(f"SET s3_use_ssl={str(settings.MINIO_USE_SSL).lower()}")
+            self.conn.execute("SET s3_use_ssl=true")  # Force HTTPS for MinIO
+            self.conn.execute("SET s3_url_style='path'")  # MinIO uses path-style URLs
+            self.conn.execute("SET s3_region='us-east-1'")  # MinIO default region
             
             logger.info("MinIO connection configured successfully")
             

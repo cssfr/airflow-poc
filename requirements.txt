@@ -1,5 +1,5 @@
 apache-airflow[celery,postgres,redis]==2.8.0
-supabase==2.3.4
+supabase==2.8.0
 polars==0.20.0
 duckdb==0.10.0
 pydantic==2.5.0
