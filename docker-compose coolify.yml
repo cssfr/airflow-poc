@@ -47,7 +47,7 @@ services:
     command: '--bind-addr 0.0.0.0:8080 --auth password /opt/airflow'
 
   airflow-init:
-    image: 'yourusername/poc2-airflow:latest'
+    image: 'andrew027/poc2-airflow:latest'
     depends_on:
       - postgres
       - redis
@@ -61,7 +61,7 @@ services:
     command: "bash -c \"airflow db init && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com\""
 
   airflow-webserver:
-    image: 'yourusername/poc2-airflow:latest'
+    image: 'andrew027/poc2-airflow:latest'
     depends_on:
       - postgres
       - redis
@@ -92,7 +92,7 @@ services:
     command: "airflow webserver"
 
   airflow-scheduler:
-    image: 'yourusername/poc2-airflow:latest'
+    image: 'andrew027/poc2-airflow:latest'
     depends_on:
       - postgres
       - redis
@@ -121,7 +121,7 @@ services:
     command: "airflow scheduler"
 
   airflow-worker:
-    image: 'yourusername/poc2-airflow:latest'
+    image: 'andrew027/poc2-airflow:latest'
     depends_on:
       - postgres
       - redis

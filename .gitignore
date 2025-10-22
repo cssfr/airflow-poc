@@ -10,4 +10,7 @@ airflow.cfg
 .DS_Store
 *.swp
 *.sqlite
+docker-compose-coolify.yml
+Dockerfile
+docker-compose.yml
 

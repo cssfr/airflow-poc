@@ -16,8 +16,8 @@ COPY config/ /opt/airflow/config/
 COPY utils/ /opt/airflow/utils/
 COPY strategies/ /opt/airflow/strategies/
 COPY engines/ /opt/airflow/engines/
-COPY dags/ /opt/airflow/dags/
+# COPY dags/ /opt/airflow/dags/
 COPY scripts/ /opt/airflow/scripts/
 
 # Set Python path
-ENV PYTHONPATH="/opt/airflow:${PYTHONPATH}"
+# ENV PYTHONPATH="/opt/airflow:${PYTHONPATH}"
